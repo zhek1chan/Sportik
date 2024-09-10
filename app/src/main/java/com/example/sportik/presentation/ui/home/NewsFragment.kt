@@ -5,9 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.compose.material3.Text
+import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.sportik.databinding.FragmentNewsBinding
+import com.example.sportik.domain.model.News
 
 class NewsFragment : Fragment() {
 
@@ -29,7 +32,11 @@ class NewsFragment : Fragment() {
         newsViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }
-        return root
+        return ComposeView(requireContext()).apply {
+            setContent {
+                NewsList()
+            }
+        }
     }
 
     override fun onDestroyView() {
