@@ -1,4 +1,4 @@
-package com.example.sportik.presentation.ui.notifications
+package com.example.sportik.presentation.ui.settings
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

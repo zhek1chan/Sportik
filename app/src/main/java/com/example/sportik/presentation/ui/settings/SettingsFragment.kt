@@ -1,13 +1,14 @@
-package com.example.sportik.presentation.ui.notifications
+package com.example.sportik.presentation.ui.settings
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.sportik.databinding.FragmentSettingsBinding
+import me.zhanghai.compose.preference.ProvidePreferenceLocals
 
 class SettingsFragment : Fragment() {
 
@@ -25,11 +26,14 @@ class SettingsFragment : Fragment() {
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textNotifications
-        notificationsViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
+        return ComposeView(requireContext()).apply {
+            setContent {
+                //запрос к вьюмодели на список избранного
+                ProvidePreferenceLocals {
+                    SettingsCompose()
+                }
+            }
         }
-        return root
     }
 
     override fun onDestroyView() {

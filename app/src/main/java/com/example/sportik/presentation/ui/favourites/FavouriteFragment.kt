@@ -1,13 +1,15 @@
-package com.example.sportik.presentation.ui.dashboard
+package com.example.sportik.presentation.ui.favourites
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.sportik.databinding.FragmentFavouriteBinding
+import com.example.sportik.presentation.ui.home.NewsList
 
 class FavouriteFragment : Fragment() {
 
@@ -25,11 +27,12 @@ class FavouriteFragment : Fragment() {
         _binding = FragmentFavouriteBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textDashboard
-        favouriteViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
+        return ComposeView(requireContext()).apply {
+            setContent {
+                //запрос к вьюмодели на список избранного
+                NewsList()
+            }
         }
-        return root
     }
 
     override fun onDestroyView() {

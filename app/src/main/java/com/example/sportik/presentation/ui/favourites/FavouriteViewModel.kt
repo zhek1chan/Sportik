@@ -1,4 +1,4 @@
-package com.example.sportik.presentation.ui.dashboard
+package com.example.sportik.presentation.ui.favourites
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

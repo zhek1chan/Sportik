@@ -34,6 +34,7 @@ class NewsFragment : Fragment() {
         }
         return ComposeView(requireContext()).apply {
             setContent {
+                //запрос в сеть
                 NewsList()
             }
         }

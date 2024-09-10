@@ -53,6 +53,7 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.room.common)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.datastore.core.android)
     //Tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -83,8 +84,12 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     debugImplementation(libs.androidx.ui.tooling)
     implementation(libs.androidx.constraintlayout.compose)
+    implementation(libs.library)
     // For Coil
     implementation(libs.coil)
     implementation(libs.coil.compose)
     implementation(libs.coil.svg)
+    // ComposePrefs library
+    implementation(libs.androidx.datastore.preferences)
+
 }
