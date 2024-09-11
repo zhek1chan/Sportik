@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_navigation_feed_to_navigation_favourites"
             app:destination="@id/navigation_favourites" />
+        <action
+            android:id="@+id/action_navigation_feed_to_newsDetailsFragment"
+            app:destination="@id/navigation_details" />
     </fragment>
 
     <fragment
@@ -29,4 +32,8 @@
         android:name="com.example.sportik.presentation.ui.settings.SettingsFragment"
         android:label="@string/settings"
         tools:layout="@layout/fragment_settings" />
+    <fragment
+        android:id="@+id/navigation_details"
+        android:name="com.example.sportik.presentation.ui.details.NewsDetailsFragment"
+        android:label="@string/news" />
 </navigation>

@@ -1,26 +1,28 @@
-package com.example.sportik.presentation.ui.favourites
+package com.example.sportik.presentation.ui.details
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -32,19 +34,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.example.sportik.R
-import com.example.sportik.databinding.FragmentFavouriteBinding
-import com.example.sportik.domain.model.News
-import dagger.hilt.android.AndroidEntryPoint
+import com.example.sportik.domain.model.NewsWithContent
+import com.example.sportik.presentation.ui.favourites.FavouriteViewModel
 
-@AndroidEntryPoint
-class FavouriteFragment : Fragment() {
-
-    private var _binding: FragmentFavouriteBinding? = null
-    private val binding get() = _binding!!
+class NewsDetailsFragment : Fragment() {
+    //private lateinit var news: NewsWithContent
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,47 +52,74 @@ class FavouriteFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val favouriteViewModel =
-            ViewModelProvider(this).get(FavouriteViewModel::class.java)
-
-        _binding = FragmentFavouriteBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-
+            ViewModelProvider(this)[FavouriteViewModel::class.java]
+        //Todo
+        //news = arguments?.getParcelable("news")!!
         return ComposeView(requireContext()).apply {
             setContent {
                 //запрос к вьюмодели на список избранного
-                NewsList()
+                NewsDetails(/*news*/)
             }
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    private fun checkOnFav() {
+        //viemodel.checkOnFav()
+    }
+
+    private fun onFavouriteIconClick() {
+        //viemodel.addNewsToFav()
+        //viemodel.deleteNewsToFav()
+    }
+
+    fun onBackIconClick() {
+        findNavController().navigate(R.id.navigation_feed)
     }
 
     @Composable
-    fun ItemNewsCard(news: News/*, onItemClicked: (dog: News) -> Unit*/) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(136.5.dp)
-                .padding(4.dp)
-                .clip(RoundedCornerShape(16.dp)),
-            //.clickable(onClick = { onItemClicked(news) }),
-            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = Color.White,
-                contentColor = Color.Black
-            )
-        ) {
+    fun ItemDetails(news: NewsWithContent) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp, 25.dp, 16.dp, 16.dp)
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .clickable(onClick = { onBackIconClick() })
+                        .padding(0.dp, 0.dp),
+                    painter = painterResource(R.drawable.icon_back),
+                    contentDescription = "BackIcon",
+                    tint = Color.Unspecified
+                )
+                Text(
+                    "Новость",
+                    fontSize = 22.sp,
+                    color = Color.Black,
+                    modifier = Modifier.padding(16.dp, 0.dp)
+                )
+                Spacer(
+                    Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                )
+                Icon(
+                    modifier = Modifier.clickable(onClick = { onFavouriteIconClick() }),
+                    painter = painterResource(R.drawable.icon_favs),
+                    contentDescription = "FavsIcon",
+                    tint = Color.Unspecified
+                )
+            }
+            HorizontalDivider(color = Color.LightGray, thickness = 1.dp)
             Box(
                 modifier = Modifier
-                    .width(IntrinsicSize.Min)
-                    .height(IntrinsicSize.Min)
+                    .fillMaxWidth()
+                    .fillMaxHeight()
                     .padding(16.dp)
             ) {
                 ConstraintLayout {
-                    val (image, title, data, icon, num) = createRefs()
+                    val (image, title, content, data, icon, num) = createRefs()
                     //GLIDE
                     //val image: Painter = rememberAsyncImagePainter(news.socialImage)
                     Image(
@@ -100,7 +127,8 @@ class FavouriteFragment : Fragment() {
                             .constrainAs(image) {
                                 top.linkTo(parent.top)
                             }
-                            .size(80.dp, 80.dp)
+                            .fillMaxWidth()
+                            .height(181.dp)
                             .clip(RoundedCornerShape(8.dp)),
                         //painter = image,
                         painter = painterResource(id = R.drawable.sports_logo),
@@ -111,14 +139,12 @@ class FavouriteFragment : Fragment() {
                     Text(
                         text = news.title,
                         modifier = Modifier
-                            .padding(12.dp, 0.dp, 0.dp, 0.dp)
-                            .height(80.dp)
-                            .width(260.dp)
+                            .padding(0.dp, 20.dp, 0.dp, 0.dp)
                             .constrainAs(title) {
-                                top.linkTo(parent.top)
-                                start.linkTo(image.end)
+                                top.linkTo(image.bottom)
+                                start.linkTo(image.start)
+                                end.linkTo(image.end)
                             },
-                        maxLines = 3,
                         overflow = TextOverflow.Ellipsis,
                         color = Color.Black,
                         fontWeight = FontWeight.Bold,
@@ -126,14 +152,27 @@ class FavouriteFragment : Fragment() {
                         textAlign = (TextAlign.Start)
                     )
 
+                    Text(
+                        text = news.content,
+                        modifier = Modifier
+                            .padding(0.dp, 10.dp, 0.dp, 16.dp)
+                            .constrainAs(content) {
+                                top.linkTo(title.bottom)
+                                start.linkTo(title.start)
+                                end.linkTo(title.end)
+                            },
+                        overflow = TextOverflow.Ellipsis,
+                        color = Color.Black,
+                        style = typography.bodyMedium,
+                        textAlign = (TextAlign.Start)
+                    )
 
                     Icon(
                         modifier = Modifier
                             .constrainAs(icon) {
-                                top.linkTo(image.bottom)
-                                start.linkTo(image.start)
-                            }
-                            .padding(0.dp, 7.dp),
+                                top.linkTo(content.bottom)
+                                start.linkTo(content.start)
+                            },
                         painter = painterResource(R.drawable.icon_comment),
                         contentDescription = "CommentIcon",
                         tint = Color.Unspecified
@@ -167,13 +206,13 @@ class FavouriteFragment : Fragment() {
                         maxLines = 1
                     )
                     /*if (news.isFavourite) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        FavouriteTag()
-                    }
-                }*/
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    FavouriteTag()
+                }
+            }*/
                 }
             }
         }
@@ -181,27 +220,24 @@ class FavouriteFragment : Fragment() {
 
     @Preview
     @Composable
-    fun NewsList() {
+    fun NewsDetails() {
         LazyColumn {
-            val list: List<News> = listOf(
-                News(
+            val list: List<NewsWithContent> = listOf(
+                NewsWithContent(
                     313131,
                     "Test Title One Test Title One Test Title One Test Title OneTest Title OneTest Title OneTest Title One Test Title One Test Title One",
                     "3",
                     "lol",
-                    "31"
-                ),
-                News(313131, "Test Title Two", "3", "lol", "31"),
-                News(313131, "Test Title Three", "3", "lol", "31"),
-                News(313131, "Test Title One", "3", "lol", "31"),
-                News(313131, "Test Title Two", "3", "lol", "31"),
-                News(313131, "Test Title Three", "3", "lol", "31"),
-                News(313131, "Test Title One", "3", "lol", "31"),
-                News(313131, "Test Title Two", "3", "lol", "31"),
-                News(313131, "Test Title Three", "3", "lol", "31"),
+                    "31",
+                    " fdavbdanda doiaubdy agbdya gbdya bvdaysdb asdhjb asnd bsahbdasgv tusafvcafvasf vfaif va" +
+                            "f anfui afui nauif bnaibf abf ab" +
+                            "af abf ab fbaif baubifabuif abif baf bnafbs" +
+                            "ab fibfiuabf ab nf a fan fnf lasnf nis nasf " +
+                            "f nauf naioufn aiubf absf baxscvbndmsdafafu3weqfbnde fsdfqwe fqe8fy qsgfdsqbdqkn3reuqh gefsbadbajnd qw7gqshfdsabfna bfqy8w gfqfnasbfanbfwy8q"
+                )
             )
             items(list) {
-                ItemNewsCard(it)
+                ItemDetails(it)
             }
         }
     }

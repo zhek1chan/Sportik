@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -70,8 +71,9 @@ dependencies {
     //RV
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.recyclerview.selection)
-    //Koin
-    implementation(libs.koin.android)
+    //Hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
     //Coroutines
     implementation(libs.kotlinx.coroutines.android)
     //Compose
@@ -89,7 +91,7 @@ dependencies {
     implementation(libs.coil)
     implementation(libs.coil.compose)
     implementation(libs.coil.svg)
-    // ComposePrefs library
-    implementation(libs.androidx.datastore.preferences)
-
+}
+kapt {
+    correctErrorTypes = true
 }

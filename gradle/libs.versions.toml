@@ -7,6 +7,8 @@ constraintlayoutCompose = "1.0.1"
 datastorePreferences = "1.1.1"
 glide = "4.15.1"
 gson = "2.10.1"
+hiltAndroid = "2.51.1"
+hiltAndroidCompiler = "2.51.1"
 koinAndroid = "3.5.3"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
@@ -51,6 +53,8 @@ compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
+hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
