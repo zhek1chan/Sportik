@@ -15,12 +15,12 @@ interface NewsDao {
     @Query("SELECT * FROM news_table")
     fun getNews(): List<NewsEntity>
 
-    //@Query("SELECT newsId FROM news_table")
-    //fun getPlaylistId(): Flow<List<Long>>
+    @Query("DELETE FROM news_table WHERE id = :itemId")
+    fun deleteNews(itemId: Int)
 
-    @Query("DELETE FROM news_table WHERE newsId = :itemId")
-    fun deleteNews(itemId: Long)
+    @Query("DELETE FROM news_table")
+    fun deleteAllNews()
 
-    @Query("DROP TABLE news_table")
-    fun deleteAllNews(playlistId: Long)
+    @Query("SELECT * FROM news_table WHERE id=:searchId")
+    fun queryId(searchId: Int): NewsEntity?
 }

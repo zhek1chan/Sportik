@@ -32,6 +32,7 @@ recyclerview = "1.3.2"
 recyclerviewSelection = "1.1.0"
 retrofit = "2.9.0"
 roomCommon = "2.6.1"
+roomCompilerVersion = "2.6.1"
 roomKtx = "2.6.1"
 runtimeLivedata = "1.7.1"
 ui = "1.7.0"
@@ -78,6 +79,7 @@ material-v30 = { module = "com.google.android.material:material", version.ref = 
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "roomCommon" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompilerVersion" }
 ui = { module = "androidx.compose.ui:ui" }
 androidx-datastore-core-android = { group = "androidx.datastore", name = "datastore-core-android", version.ref = "datastoreCoreAndroid" }
 

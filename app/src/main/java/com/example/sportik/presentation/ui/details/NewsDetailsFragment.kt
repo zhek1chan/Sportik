@@ -1,6 +1,7 @@
 package com.example.sportik.presentation.ui.details
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -58,6 +59,7 @@ class NewsDetailsFragment : Fragment() {
     ): View {
         id = arguments?.getInt("newsId")!!
         viewModel.getNews(id)
+        //viewModel.onFavCheck(id)
         return ComposeView(requireContext()).apply {
             setContent {
                 ItemDetails()
@@ -65,13 +67,12 @@ class NewsDetailsFragment : Fragment() {
         }
     }
 
-    private fun checkOnFav(): Boolean {
-        return viewModel.checkOnFav(id)
+    private fun onFavouriteIconClick(id: Int) {
+        viewModel.deleteNewsToFav(id)
     }
 
-    private fun onFavouriteIconClick(news: NewsWithContent) {
+    private fun onUnFavouriteIconClick(news: NewsWithContent) {
         viewModel.addNewsToFav(news)
-        viewModel.deleteNewsToFav(news.id)
     }
 
     private fun onBackIconClick() {
@@ -91,8 +92,10 @@ class NewsDetailsFragment : Fragment() {
             null -> Unit
         }
     }
+
     @Composable
     fun SetData(news: NewsWithContent) {
+        Log.d("NewsDetailsFragment", "Data has been set")
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.verticalScroll(rememberScrollState())
@@ -101,6 +104,7 @@ class NewsDetailsFragment : Fragment() {
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(70.dp)
                     .padding(16.dp, 25.dp, 16.dp, 16.dp)
             ) {
                 Icon(
@@ -122,17 +126,37 @@ class NewsDetailsFragment : Fragment() {
                         .weight(1f)
                         .fillMaxWidth()
                 )
-                val isFav = checkOnFav()
-                var tint = Color.Unspecified
-                if (isFav) {
-                    tint = Color.Red
-                }
-                IconButton(onClick = { onFavouriteIconClick(news)}) {
-                    Icon(
-                        painter = painterResource(R.drawable.icon_favs),
-                        contentDescription = "FavsIcon",
-                        tint = tint
-                    )
+                val value by viewModel.getFavLiveData().observeAsState()
+                when (value) {
+                    true -> {
+                        IconButton(onClick = { onFavouriteIconClick(id) }) {
+                            Icon(
+                                painter = painterResource(R.drawable.icon_favs_active),
+                                contentDescription = "FavsIcon",
+                                tint = Color.Red
+                            )
+                        }
+                    }
+
+                    false -> {
+                        IconButton(onClick = { onUnFavouriteIconClick(news) }) {
+                            Icon(
+                                painter = painterResource(R.drawable.icon_favs_inactive),
+                                contentDescription = "FavsIcon",
+                                tint = Color.Unspecified
+                            )
+                        }
+                    }
+
+                    null -> {
+                        IconButton(onClick = { onUnFavouriteIconClick(news) }) {
+                            Icon(
+                                painter = painterResource(R.drawable.icon_favs_inactive),
+                                contentDescription = "FavsIcon",
+                                tint = Color.Unspecified
+                            )
+                        }
+                    }
                 }
             }
             HorizontalDivider(color = Color.LightGray, thickness = 1.dp)
@@ -140,7 +164,7 @@ class NewsDetailsFragment : Fragment() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight()
-                    .padding(16.dp)
+                    .padding(16.dp, 16.dp, 16.dp, 0.dp)
             ) {
                 ConstraintLayout {
                     val (image, title, content, data, icon, num) = createRefs()
@@ -160,7 +184,7 @@ class NewsDetailsFragment : Fragment() {
                     Text(
                         text = news.title,
                         modifier = Modifier
-                            .padding(0.dp, 20.dp, 0.dp, 0.dp)
+                            .padding(0.dp, 20.dp, 0.dp, 10.dp)
                             .constrainAs(title) {
                                 top.linkTo(image.bottom)
                                 start.linkTo(image.start)
@@ -176,7 +200,6 @@ class NewsDetailsFragment : Fragment() {
                     Text(
                         text = news.content,
                         modifier = Modifier
-                            .padding(0.dp, 10.dp, 0.dp, 16.dp)
                             .constrainAs(content) {
                                 top.linkTo(title.bottom)
                                 start.linkTo(title.start)
@@ -226,16 +249,9 @@ class NewsDetailsFragment : Fragment() {
                         style = typography.titleSmall,
                         maxLines = 1
                     )
-                    /*if (news.isFavourite) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    FavouriteTag()
                 }
-            }*/
                 }
-            }
+
         }
     }
 }

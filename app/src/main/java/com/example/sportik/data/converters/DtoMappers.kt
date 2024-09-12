@@ -3,6 +3,7 @@ package com.example.sportik.data.converters
 import android.text.Html
 import com.example.sportik.data.dto.NewsDto
 import com.example.sportik.data.dto.NewsWithContentDto
+import com.example.sportik.data.entity.NewsEntity
 import com.example.sportik.domain.model.News
 import com.example.sportik.domain.model.NewsWithContent
 
@@ -27,8 +28,30 @@ class DtoMappers {
             postedTime = convertData(dto.posted_time),
             socialImage = dto.social_image,
             commentCount = dto.comment_count,
-            content = Html.fromHtml(dto.content).toString().removeRange(0, 885)
+            content = Html.fromHtml(dto.content).toString().re
             //без понятия как по другому убрать html функции из текста
+        )
+    }
+
+    fun newsWithContentToNewsEntity(item: NewsWithContent): NewsEntity {
+        return NewsEntity(
+            id = item.id,
+            title = item.title,
+            postedTime = item.postedTime,
+            socialImage = item.socialImage,
+            commentCount = item.commentCount,
+            content = item.content
+        )
+    }
+
+    fun newsEntityToNewsWithContent(item: NewsEntity): NewsWithContent {
+        return NewsWithContent(
+            id = item.id,
+            title = item.title,
+            postedTime = item.postedTime,
+            socialImage = item.socialImage,
+            commentCount = item.commentCount,
+            content = item.content
         )
     }
 

@@ -51,8 +51,11 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    //Navigation
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+    //Room
+    kapt(libs.room.compiler)
     implementation(libs.androidx.room.common)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.datastore.core.android)
@@ -89,7 +92,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.library)
     implementation(libs.androidx.runtime.livedata)
-    // For Coil
+    //Coil
     implementation(libs.coil)
     implementation(libs.coil.compose)
     implementation(libs.coil.svg)

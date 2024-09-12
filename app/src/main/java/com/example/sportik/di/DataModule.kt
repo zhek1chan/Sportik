@@ -2,14 +2,11 @@ package com.example.sportik.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.sportik.data.converters.DtoMappers
 import com.example.sportik.data.database.AppDatabase
 import com.example.sportik.data.database.NewsDao
 import com.example.sportik.data.network.NetworkClient
 import com.example.sportik.data.network.RetrofitNetworkClient
 import com.example.sportik.data.network.SportsApi
-import com.example.sportik.data.repository.NewsRepositoryImpl
-import com.example.sportik.domain.repository.NewsRepository
 import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
@@ -28,18 +25,15 @@ class DataModule {
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase =
-        Room.databaseBuilder(context, AppDatabase::class.java, "database.db").build()
+        Room.databaseBuilder(context, AppDatabase::class.java, "database.db")
+            .allowMainThreadQueries()
+            .fallbackToDestructiveMigration()
+            .build()
 
     @Provides
     @Singleton
     fun provideNewsDao(appDatabase: AppDatabase): NewsDao =
         appDatabase.newsDao()
-
-    /*@Provides
-    @Singleton
-    fun provideExternalNavigator(@ApplicationContext appContext: Context): ExternalNavigator {
-        return ExternalNavigatorImpl(appContext)
-    }*/
 
     @Provides
     @Singleton
