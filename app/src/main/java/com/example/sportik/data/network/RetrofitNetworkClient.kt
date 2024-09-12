@@ -22,8 +22,6 @@ class RetrofitNetworkClient(
         withContext(Dispatchers.IO) {
             news = try {
                 sportsApi.getNews().body()?.let {
-                    Log.d("WTF","${ sportsApi.getNews()}")
-                    Log.d("WTF","$it")
                     Resource.Data(it)
                 } ?: Resource.NotFound(NOT_FOUND)
             } catch (ex: IOException) {
@@ -31,11 +29,10 @@ class RetrofitNetworkClient(
                 Resource.ConnectionError(REQUEST_ERROR)
             }
         }
-        Log.d("NEWSHEHEHEH","$news")
         return news
     }
 
-    override suspend fun getNewsWithDetails(id: Long): Resource<NewsWithContentDto> {
+    override suspend fun getNewsWithDetails(id: Int): Resource<NewsWithContentDto> {
         var news: Resource<NewsWithContentDto>
         if (!isConnected()) return Resource.ConnectionError(DEVICE_IS_OFFLINE)
         withContext(Dispatchers.IO) {
@@ -48,6 +45,7 @@ class RetrofitNetworkClient(
                 Resource.ConnectionError(REQUEST_ERROR)
             }
         }
+        Log.d("Network", "$news")
         return news
     }
 

@@ -1,7 +1,7 @@
 package com.example.sportik.data.dto
 
 data class NewsDto(
-    val newsId: Long,
+    val id: Int,
     val title: String,
     val content: String,
     val comment_count: String,

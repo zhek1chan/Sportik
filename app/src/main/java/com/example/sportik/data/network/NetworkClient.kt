@@ -8,5 +8,5 @@ interface NetworkClient {
 
     suspend fun getNews(): Resource<ListNewsDto>
 
-    suspend fun getNewsWithDetails(id: Long): Resource<NewsWithContentDto>
+    suspend fun getNewsWithDetails(id: Int): Resource<NewsWithContentDto>
 }

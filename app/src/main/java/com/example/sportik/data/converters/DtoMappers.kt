@@ -1,5 +1,6 @@
 package com.example.sportik.data.converters
 
+import android.text.Html
 import com.example.sportik.data.dto.NewsDto
 import com.example.sportik.data.dto.NewsWithContentDto
 import com.example.sportik.domain.model.News
@@ -9,9 +10,9 @@ class DtoMappers {
     fun newsDtoToNews(dto: List<NewsDto>): List<News> {
         return dto.map {
             val item = News(
-                newsId = it.newsId,
+                id = it.id,
                 title = it.title,
-                postedTime = it.posted_time,
+                postedTime = convertData(it.posted_time),
                 socialImage = it.social_image,
                 commentCount = it.comment_count
             )
@@ -21,82 +22,25 @@ class DtoMappers {
 
     fun newsWithContentDtoToNewsWithContent(dto: NewsWithContentDto): NewsWithContent {
         return NewsWithContent(
-            newsId = dto.newsId,
+            id = dto.id,
             title = dto.title,
-            postedTime = dto.postedTime,
-            socialImage = dto.socialImage,
-            commentCount = dto.commentCount,
-            content = dto.content
+            postedTime = convertData(dto.posted_time),
+            socialImage = dto.social_image,
+            commentCount = dto.comment_count,
+            content = Html.fromHtml(dto.content).toString().removeRange(0, 885)
+            //без понятия как по другому убрать html функции из текста
         )
     }
-}
 
-/*
-fun newsToNewsDto(dto: List<News>): List<News> {
-    return dto.map {
-        val item = News(
-            newsId = it.newsId,
-            title = it.title,
-            postedTime = it.postedTime,
-            socialImage = it.socialImage,
-            commentCount = it.commentCount
-        )
-        item
+    private fun convertData(t: String): String {
+        var formatted = java.time.format.DateTimeFormatter.ISO_INSTANT
+            .format(java.time.Instant.ofEpochSecond(t.toLong()))
+        formatted = formatted.replace('T', ' ')
+        formatted = formatted.replace(":00Z", "")
+        val splitted = formatted.split(" ").toMutableList()
+        splitted[0] = splitted[0].replace('-', '.')
+        formatted = splitted[1] + " " + splitted[0]
+        return formatted
     }
 }
 
-fun ticketRecDTOToTicketsRec(dto: List<RecTicketDto>): List<TicketsRec> {
-    return dto.map {
-        val newTicketRecs = TicketsRec(
-            id = it.id,
-            title = it.title,
-            price = getPriceString(it.price.value.toInt()),
-            timeRange = getTimeRangeString(it.timeRange)
-        )
-        newTicketRecs
-    }
-}
-private fun getOptions(transfer: Boolean, duration: String): String {
-    val options = StringBuilder()
-    options.append("${duration}ч в пути")
-    if (!transfer) options.append(" / Без пересадок")
-    return options.toString()
-}
-
-private fun getDuration(departure: String, arrival: String): String {
-    val diff = convertToDate(arrival).time - convertToDate(departure).time
-    val hours = diff.milliseconds.toDouble(DurationUnit.HOURS)
-    return String.format(Locale.US, "%.1f", hours)
-}
-
-private fun getDate(date: String): String {
-    return SimpleDateFormat("HH:mm", Locale.getDefault()).format(convertToDate(date))
-}
-
-private fun convertToDate(date: String): Date {
-    val dateFormat = try {
-        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(date)
-    } catch (e: ParseException) {
-        e.printStackTrace()
-    }
-    return if (dateFormat is Date) dateFormat
-    else Calendar.getInstance().time
-}
-
-private fun getTimeRangeString(array: ArrayList<String>): String {
-    val timeRange = StringBuilder()
-    array.forEachIndexed { index, time ->
-        timeRange.append(time)
-        if (index != array.size - 1) timeRange.append("  ")
-    }
-    return timeRange.toString()
-}
-
-private fun getPriceString(price: Int): String {
-    val result = StringBuilder()
-    with(result) {
-        append(NumberFormat.getInstance().format(price))
-        append(" ₽")
-    }
-    return result.toString().replace(',', ' ')
-}*/

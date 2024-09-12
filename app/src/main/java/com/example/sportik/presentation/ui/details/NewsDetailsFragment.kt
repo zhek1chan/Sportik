@@ -14,14 +14,17 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,53 +35,68 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import coil.compose.rememberAsyncImagePainter
 import com.example.sportik.R
 import com.example.sportik.domain.model.NewsWithContent
-import com.example.sportik.presentation.ui.favourites.FavouriteViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class NewsDetailsFragment : Fragment() {
-    //private lateinit var news: NewsWithContent
+    private var id: Int = 0
+    private val viewModel: NewsDetailsViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val favouriteViewModel =
-            ViewModelProvider(this)[FavouriteViewModel::class.java]
-        //Todo
-        //news = arguments?.getParcelable("news")!!
+        id = arguments?.getInt("newsId")!!
+        viewModel.getNews(id)
         return ComposeView(requireContext()).apply {
             setContent {
-                //запрос к вьюмодели на список избранного
-                NewsDetails(/*news*/)
+                ItemDetails()
             }
         }
     }
 
-    private fun checkOnFav() {
-        //viemodel.checkOnFav()
+    private fun checkOnFav(): Boolean {
+        return viewModel.checkOnFav(id)
     }
 
-    private fun onFavouriteIconClick() {
-        //viemodel.addNewsToFav()
-        //viemodel.deleteNewsToFav()
+    private fun onFavouriteIconClick(news: NewsWithContent) {
+        viewModel.addNewsToFav(news)
+        viewModel.deleteNewsToFav(news.id)
     }
 
-    fun onBackIconClick() {
+    private fun onBackIconClick() {
         findNavController().navigate(R.id.navigation_feed)
     }
 
     @Composable
-    fun ItemDetails(news: NewsWithContent) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    fun ItemDetails() {
+        val value by viewModel.getStateLiveData().observeAsState()
+        when (value) {
+            is DetailsScreenState.SearchIsOk -> {
+                SetData((value as DetailsScreenState.SearchIsOk).data)
+            }
+
+            DetailsScreenState.ConnectionError -> Unit
+            DetailsScreenState.NothingFound -> Unit
+            null -> Unit
+        }
+    }
+    @Composable
+    fun SetData(news: NewsWithContent) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.verticalScroll(rememberScrollState())
+        ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
@@ -104,12 +122,18 @@ class NewsDetailsFragment : Fragment() {
                         .weight(1f)
                         .fillMaxWidth()
                 )
-                Icon(
-                    modifier = Modifier.clickable(onClick = { onFavouriteIconClick() }),
-                    painter = painterResource(R.drawable.icon_favs),
-                    contentDescription = "FavsIcon",
-                    tint = Color.Unspecified
-                )
+                val isFav = checkOnFav()
+                var tint = Color.Unspecified
+                if (isFav) {
+                    tint = Color.Red
+                }
+                IconButton(onClick = { onFavouriteIconClick(news)}) {
+                    Icon(
+                        painter = painterResource(R.drawable.icon_favs),
+                        contentDescription = "FavsIcon",
+                        tint = tint
+                    )
+                }
             }
             HorizontalDivider(color = Color.LightGray, thickness = 1.dp)
             Box(
@@ -120,8 +144,6 @@ class NewsDetailsFragment : Fragment() {
             ) {
                 ConstraintLayout {
                     val (image, title, content, data, icon, num) = createRefs()
-                    //GLIDE
-                    //val image: Painter = rememberAsyncImagePainter(news.socialImage)
                     Image(
                         modifier = Modifier
                             .constrainAs(image) {
@@ -130,8 +152,7 @@ class NewsDetailsFragment : Fragment() {
                             .fillMaxWidth()
                             .height(181.dp)
                             .clip(RoundedCornerShape(8.dp)),
-                        //painter = image,
-                        painter = painterResource(id = R.drawable.sports_logo),
+                        painter = rememberAsyncImagePainter(news.socialImage),
                         contentDescription = "img",
                         contentScale = ContentScale.Crop
                     )
@@ -214,30 +235,6 @@ class NewsDetailsFragment : Fragment() {
                 }
             }*/
                 }
-            }
-        }
-    }
-
-    @Preview
-    @Composable
-    fun NewsDetails() {
-        LazyColumn {
-            val list: List<NewsWithContent> = listOf(
-                NewsWithContent(
-                    313131,
-                    "Test Title One Test Title One Test Title One Test Title OneTest Title OneTest Title OneTest Title One Test Title One Test Title One",
-                    "3",
-                    "lol",
-                    "31",
-                    " fdavbdanda doiaubdy agbdya gbdya bvdaysdb asdhjb asnd bsahbdasgv tusafvcafvasf vfaif va" +
-                            "f anfui afui nauif bnaibf abf ab" +
-                            "af abf ab fbaif baubifabuif abif baf bnafbs" +
-                            "ab fibfiuabf ab nf a fan fnf lasnf nis nasf " +
-                            "f nauf naioufn aiubf absf baxscvbndmsdafafu3weqfbnde fsdfqwe fqe8fy qsgfdsqbdqkn3reuqh gefsbadbajnd qw7gqshfdsabfna bfqy8w gfqfnasbfanbfwy8q"
-                )
-            )
-            items(list) {
-                ItemDetails(it)
             }
         }
     }

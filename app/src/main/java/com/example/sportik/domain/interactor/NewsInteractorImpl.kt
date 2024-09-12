@@ -12,6 +12,6 @@ class NewsInteractorImpl(
     override suspend fun getNews(): Flow<Resource<List<News>>> =
         repository.getNews()
 
-    override suspend fun getNewsWithDetails(id: Long): Flow<Resource<NewsWithContent>> =
+    override suspend fun getNewsWithDetails(id: Int): Flow<Resource<NewsWithContent>> =
         repository.getNewsWithDetails(id)
 }

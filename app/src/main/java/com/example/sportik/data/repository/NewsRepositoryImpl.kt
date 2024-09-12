@@ -31,7 +31,7 @@ class NewsRepositoryImpl(
         }
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun getNewsWithDetails(id: Long): Flow<Resource<NewsWithContent>> = flow {
+    override suspend fun getNewsWithDetails(id: Int): Flow<Resource<NewsWithContent>> = flow {
         when (val response = networkClient.getNewsWithDetails(id)) {
             is Resource.Data -> {
                 with(response) {

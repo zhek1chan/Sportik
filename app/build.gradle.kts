@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -87,6 +88,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.library)
+    implementation(libs.androidx.runtime.livedata)
     // For Coil
     implementation(libs.coil)
     implementation(libs.coil.compose)

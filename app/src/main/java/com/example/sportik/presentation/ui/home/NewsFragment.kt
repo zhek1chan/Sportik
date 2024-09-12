@@ -23,6 +23,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -37,7 +39,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.example.sportik.R
 import com.example.sportik.domain.model.News
 import dagger.hilt.android.AndroidEntryPoint
@@ -47,38 +49,28 @@ class NewsFragment : Fragment() {
 
     private val viewModel: NewsViewModel by viewModels()
     private var newsList: MutableList<News> = ArrayList()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        getNews()
+        viewModel.getNews()
         return ComposeView(requireContext()).apply {
             setContent {
-                //pass news to compose fun
-                NewsList(newsList)
+                NewsList()
             }
         }
     }
 
-    private fun getNews() {
-        viewModel.getNews()
-        viewModel.observeOffers().observe(viewLifecycleOwner) { news ->
-            newsList.addAll(news)
-        }
-        Log.d("NewsFragment","$newsList")
-    }
-
     private fun onItemClicked(news: News) {
-        news.newsId
-        //TODO()
-        //call news with details
-        //put it in bundle and navigate to
-        findNavController().navigate(R.id.navigation_details)
+        val bundle = Bundle()
+        bundle.putInt("newsId", news.id)
+        findNavController().navigate(R.id.navigation_details, bundle)
     }
 
     @Composable
-    fun ItemNewsCard(news: News/*, onItemClicked: (dog: News) -> Unit*/) {
+    fun ItemNewsCard(news: News) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -100,8 +92,6 @@ class NewsFragment : Fragment() {
             ) {
                 ConstraintLayout {
                     val (image, title, data, icon, num) = createRefs()
-                    //GLIDE
-                    //val image: Painter = rememberAsyncImagePainter(news.socialImage)
                     Image(
                         modifier = Modifier
                             .constrainAs(image) {
@@ -109,8 +99,7 @@ class NewsFragment : Fragment() {
                             }
                             .size(80.dp, 80.dp)
                             .clip(RoundedCornerShape(8.dp)),
-                        //painter = image,
-                        painter = rememberImagePainter(news.socialImage),
+                        painter = rememberAsyncImagePainter(news.socialImage),
                         contentDescription = "img",
                         contentScale = ContentScale.Crop
                     )
@@ -173,25 +162,26 @@ class NewsFragment : Fragment() {
                         style = typography.titleSmall,
                         maxLines = 1
                     )
-                    /*if (news.isFavourite) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        FavouriteTag()
-                    }
-                }*/
                 }
             }
         }
     }
 
     @Composable
-    fun NewsList(list: MutableList<News>) {
-        LazyColumn {
-            items(list) {
-                ItemNewsCard(it)
-            }
+    fun NewsList() {
+        Log.d("NewsFragment", "$newsList")
+        val value by viewModel.getStateLiveData().observeAsState()
+        when (value) {
+            is NewsScreenState.SearchIsOk -> {
+                newsList = (value as NewsScreenState.SearchIsOk).data
+                LazyColumn {
+                items(newsList) {
+                    ItemNewsCard(it)
+                }
+            }}
+            NewsScreenState.ConnectionError -> Unit
+            NewsScreenState.NothingFound -> Unit
+            null -> Unit
         }
     }
 }
