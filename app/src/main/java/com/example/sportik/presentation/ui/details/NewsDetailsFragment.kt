@@ -46,11 +46,13 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.sportik.R
 import com.example.sportik.domain.model.NewsWithContent
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Job
 
 @AndroidEntryPoint
 class NewsDetailsFragment : Fragment() {
     private var id: Int = 0
     private val viewModel: NewsDetailsViewModel by viewModels()
+    private var buttonChanger: Job? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,6 +61,7 @@ class NewsDetailsFragment : Fragment() {
     ): View {
         id = arguments?.getInt("newsId")!!
         viewModel.getNews(id)
+        viewModel.onFavCheck(id)
         //viewModel.onFavCheck(id)
         return ComposeView(requireContext()).apply {
             setContent {
@@ -69,14 +72,16 @@ class NewsDetailsFragment : Fragment() {
 
     private fun onFavouriteIconClick(id: Int) {
         viewModel.deleteNewsToFav(id)
+        viewModel.likeIndicator.postValue(false)
     }
 
     private fun onUnFavouriteIconClick(news: NewsWithContent) {
         viewModel.addNewsToFav(news)
+        viewModel.likeIndicator.postValue(true)
     }
 
     private fun onBackIconClick() {
-        findNavController().navigate(R.id.navigation_feed)
+        findNavController().navigateUp()
     }
 
     @Composable
@@ -127,6 +132,7 @@ class NewsDetailsFragment : Fragment() {
                         .fillMaxWidth()
                 )
                 val value by viewModel.getFavLiveData().observeAsState()
+                Log.d("DetailsFragment", "is fav = $value")
                 when (value) {
                     true -> {
                         IconButton(onClick = { onFavouriteIconClick(id) }) {

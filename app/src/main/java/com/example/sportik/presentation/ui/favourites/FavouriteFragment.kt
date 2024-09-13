@@ -1,10 +1,12 @@
 package com.example.sportik.presentation.ui.favourites
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,6 +23,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -30,33 +34,28 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import coil.compose.rememberAsyncImagePainter
 import com.example.sportik.R
-import com.example.sportik.databinding.FragmentFavouriteBinding
-import com.example.sportik.domain.model.News
+import com.example.sportik.domain.model.NewsWithContent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class FavouriteFragment : Fragment() {
 
-    private var _binding: FragmentFavouriteBinding? = null
-    private val binding get() = _binding!!
+    private var newsList: MutableList<NewsWithContent> = ArrayList()
+    private val viewModel: FavouriteViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val favouriteViewModel =
-            ViewModelProvider(this).get(FavouriteViewModel::class.java)
-
-        _binding = FragmentFavouriteBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-
+        viewModel.getNews()
         return ComposeView(requireContext()).apply {
             setContent {
                 //запрос к вьюмодели на список избранного
@@ -65,20 +64,21 @@ class FavouriteFragment : Fragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    private fun onItemClicked(news: NewsWithContent) {
+        val bundle = Bundle()
+        bundle.putInt("newsId", news.id)
+        findNavController().navigate(R.id.navigation_details, bundle)
     }
 
     @Composable
-    fun ItemNewsCard(news: News/*, onItemClicked: (dog: News) -> Unit*/) {
+    fun ItemNewsCard(news: NewsWithContent) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(136.5.dp)
                 .padding(4.dp)
-                .clip(RoundedCornerShape(16.dp)),
-            //.clickable(onClick = { onItemClicked(news) }),
+                .clip(RoundedCornerShape(16.dp))
+                .clickable(onClick = { onItemClicked(news) }),
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
             colors = CardDefaults.cardColors(
                 containerColor = Color.White,
@@ -93,8 +93,6 @@ class FavouriteFragment : Fragment() {
             ) {
                 ConstraintLayout {
                     val (image, title, data, icon, num) = createRefs()
-                    //GLIDE
-                    //val image: Painter = rememberAsyncImagePainter(news.socialImage)
                     Image(
                         modifier = Modifier
                             .constrainAs(image) {
@@ -102,8 +100,7 @@ class FavouriteFragment : Fragment() {
                             }
                             .size(80.dp, 80.dp)
                             .clip(RoundedCornerShape(8.dp)),
-                        //painter = image,
-                        painter = painterResource(id = R.drawable.sports_logo),
+                        painter = rememberAsyncImagePainter(news.socialImage),
                         contentDescription = "img",
                         contentScale = ContentScale.Crop
                     )
@@ -166,43 +163,27 @@ class FavouriteFragment : Fragment() {
                         style = typography.titleSmall,
                         maxLines = 1
                     )
-                    /*if (news.isFavourite) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        FavouriteTag()
-                    }
-                }*/
                 }
             }
         }
     }
 
-    @Preview
     @Composable
     fun NewsList() {
-        LazyColumn {
-            val list: List<News> = listOf(
-                News(
-                    313131,
-                    "Test Title One Test Title One Test Title One Test Title OneTest Title OneTest Title OneTest Title One Test Title One Test Title One",
-                    "3",
-                    "lol",
-                    "31"
-                ),
-                News(313131, "Test Title Two", "3", "lol", "31"),
-                News(313131, "Test Title Three", "3", "lol", "31"),
-                News(313131, "Test Title One", "3", "lol", "31"),
-                News(313131, "Test Title Two", "3", "lol", "31"),
-                News(313131, "Test Title Three", "3", "lol", "31"),
-                News(313131, "Test Title One", "3", "lol", "31"),
-                News(313131, "Test Title Two", "3", "lol", "31"),
-                News(313131, "Test Title Three", "3", "lol", "31"),
-            )
-            items(list) {
-                ItemNewsCard(it)
+        Log.d("NewsFragment", "$newsList")
+        val value by viewModel.getStateLiveData().observeAsState()
+        when (value) {
+            is FavouriteScreenState.Data -> {
+                newsList = (value as FavouriteScreenState.Data).data
+                LazyColumn {
+                    items(newsList) {
+                        ItemNewsCard(it)
+                    }
+                }
             }
+
+            FavouriteScreenState.NothingFound -> Unit
+            null -> Unit
         }
     }
 }

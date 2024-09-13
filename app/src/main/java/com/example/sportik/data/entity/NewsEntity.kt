@@ -11,5 +11,6 @@ data class NewsEntity(
     val commentCount: String,
     val socialImage: String,
     val postedTime: String,
-    val content: String
+    val content: String,
+    val addedDate: Long
 )

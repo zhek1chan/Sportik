@@ -26,8 +26,8 @@ class FavouritesRepositoryImpl(
     }
 
     override suspend fun getAll(): Flow<List<NewsWithContent>> = flow {
-        val tracks = db.newsDao().getNews()
-        emit(convertFromEntity(tracks.reversed()))
+        val news = db.newsDao().getNews()
+        emit(convertFromEntity(news))
     }
 
     override suspend fun favouritesCheck(id: Int): Flow<Boolean> = flow {

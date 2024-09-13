@@ -12,7 +12,7 @@ interface NewsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertNews(item: NewsEntity)
 
-    @Query("SELECT * FROM news_table")
+    @Query("SELECT * FROM news_table ORDER BY addedDate DESC")
     fun getNews(): List<NewsEntity>
 
     @Query("DELETE FROM news_table WHERE id = :itemId")

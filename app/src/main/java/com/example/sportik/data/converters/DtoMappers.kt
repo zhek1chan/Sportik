@@ -28,19 +28,21 @@ class DtoMappers {
             postedTime = convertData(dto.posted_time),
             socialImage = dto.social_image,
             commentCount = dto.comment_count,
-            content = Html.fromHtml(dto.content).toString().re
+            content = Html.fromHtml(dto.content).toString()
             //без понятия как по другому убрать html функции из текста
         )
     }
 
     fun newsWithContentToNewsEntity(item: NewsWithContent): NewsEntity {
+        val currentDateTime: java.util.Date = java.util.Date()
         return NewsEntity(
             id = item.id,
             title = item.title,
             postedTime = item.postedTime,
             socialImage = item.socialImage,
             commentCount = item.commentCount,
-            content = item.content
+            content = item.content,
+            addedDate = currentDateTime.time
         )
     }
 
