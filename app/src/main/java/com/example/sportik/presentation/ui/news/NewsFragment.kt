@@ -1,4 +1,4 @@
-package com.example.sportik.presentation.ui.favourites
+package com.example.sportik.presentation.ui.news
 
 import android.os.Bundle
 import android.util.Log
@@ -7,8 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -28,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -44,15 +44,15 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.sportik.R
-import com.example.sportik.domain.model.NewsWithContent
+import com.example.sportik.domain.model.News
 import com.example.sportik.presentation.themes.ComposeTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class FavouriteFragment : Fragment() {
+class NewsFragment : Fragment() {
 
-    private var newsList: MutableList<NewsWithContent> = ArrayList()
-    private val viewModel: FavouriteViewModel by viewModels()
+    private val viewModel: NewsViewModel by viewModels()
+    private var newsList: MutableList<News> = ArrayList()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -67,19 +67,19 @@ class FavouriteFragment : Fragment() {
         }
     }
 
-    private fun onItemClicked(news: NewsWithContent) {
+    private fun onItemClicked(news: News) {
         val bundle = Bundle()
         bundle.putInt("newsId", news.id)
         findNavController().navigate(R.id.navigation_details, bundle)
     }
 
     @Composable
-    fun ItemNewsCard(news: NewsWithContent) {
+    fun ItemNewsCard(news: News) {
         ComposeTheme {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(140.5.dp)
+                    .height(136.5.dp)
                     .padding(4.dp)
                     .clip(RoundedCornerShape(16.dp))
                     .clickable(onClick = { onItemClicked(news) }),
@@ -124,6 +124,7 @@ class FavouriteFragment : Fragment() {
                                     .constrainAs(title) {
                                         top.linkTo(parent.top)
                                         start.linkTo(image.end)
+                                        end.linkTo(parent.end)
                                     },
                                 maxLines = 3,
                                 overflow = TextOverflow.Ellipsis,
@@ -173,7 +174,6 @@ class FavouriteFragment : Fragment() {
                                 style = typography.bodySmall,
                                 maxLines = 1
                             )
-
                         }
                     }
                     HorizontalDivider(
@@ -197,16 +197,18 @@ class FavouriteFragment : Fragment() {
         Log.d("NewsFragment", "$newsList")
         val value by viewModel.getStateLiveData().observeAsState()
         when (value) {
-            is FavouriteScreenState.Data -> {
-                newsList = (value as FavouriteScreenState.Data).data
-                LazyColumn {
-                    items(newsList) {
-                        ItemNewsCard(it)
-                    }
+            is NewsScreenState.SearchIsOk -> {
+                newsList = (value as NewsScreenState.SearchIsOk).data
+                LazyColumn(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                items(newsList) {
+                    ItemNewsCard(it)
                 }
-            }
-
-            FavouriteScreenState.NothingFound -> Unit
+            }}
+            NewsScreenState.ConnectionError -> Unit
+            NewsScreenState.NothingFound -> Unit
             null -> Unit
         }
     }

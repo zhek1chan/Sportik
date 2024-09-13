@@ -28,4 +28,8 @@ class FavouriteViewModel  @Inject constructor(private val interactor: Favourites
             }
         }
     }
+
+    fun deleteAll() {
+        interactor.deleteAll()
+    }
 }

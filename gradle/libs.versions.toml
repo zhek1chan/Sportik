@@ -1,5 +1,6 @@
 [versions]
 agp = "8.5.0"
+androidxMaterial = "2.1.1"
 coil = "2.7.0"
 coilCompose = "2.7.0"
 coilSvg = "2.7.0"
@@ -35,6 +36,7 @@ roomCommon = "2.6.1"
 roomCompilerVersion = "2.6.1"
 roomKtx = "2.6.1"
 runtimeLivedata = "1.7.1"
+switchyCompose = "0.14"
 ui = "1.7.0"
 datastoreCoreAndroid = "1.1.1"
 
@@ -43,6 +45,7 @@ androidx-adaptive = { module = "androidx.compose.material3.adaptive:adaptive" }
 androidx-constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayoutCompose" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
+androidx-material = { module = "androidx.compose.material:material", version.ref = "androidxMaterial" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-material3 = { module = "androidx.compose.material3:material3" }
 androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
@@ -80,6 +83,7 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit
 androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "roomCommon" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompilerVersion" }
+switchy-compose = { module = "com.github.muazkadan:switchy-compose", version.ref = "switchyCompose" }
 ui = { module = "androidx.compose.ui:ui" }
 androidx-datastore-core-android = { group = "androidx.datastore", name = "datastore-core-android", version.ref = "datastoreCoreAndroid" }
 

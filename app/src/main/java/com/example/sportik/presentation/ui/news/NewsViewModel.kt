@@ -1,4 +1,4 @@
-package com.example.sportik.presentation.ui.home
+package com.example.sportik.presentation.ui.news
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

@@ -1,4 +1,4 @@
-package com.example.sportik.presentation.ui.home
+package com.example.sportik.presentation.ui.news
 
 import com.example.sportik.domain.model.News
 
