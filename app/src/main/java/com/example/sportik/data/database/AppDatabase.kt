@@ -8,7 +8,7 @@ import com.example.sportik.data.entity.NewsEntity
     version = 1,
     entities = [NewsEntity::class]
 )
-abstract class AppDataBase : RoomDatabase() {
+abstract class AppDatabase : RoomDatabase() {
 
     abstract fun newsDao(): NewsDao
 }

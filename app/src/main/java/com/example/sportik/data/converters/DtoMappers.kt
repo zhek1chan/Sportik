@@ -1,103 +1,78 @@
 package com.example.sportik.data.converters
 
-import java.text.NumberFormat
-import java.text.ParseException
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
-import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.DurationUnit
+import android.os.Environment
+import android.text.Html
+import android.util.Log
+import androidx.core.text.HtmlCompat
+import com.example.sportik.data.dto.NewsDto
+import com.example.sportik.data.dto.NewsWithContentDto
+import com.example.sportik.data.entity.NewsEntity
+import com.example.sportik.domain.model.News
+import com.example.sportik.domain.model.NewsWithContent
 
 class DtoMappers {
-    /*
-    fun recommendationsDTOToMainRecommendations(dto: List<OfferDTO>): List<Recommendation> {
+    fun newsDtoToNews(dto: List<NewsDto>): List<News> {
         return dto.map {
-            val newOffers = Recommendation(
+            val item = News(
                 id = it.id,
                 title = it.title,
-                town = it.town,
-                price = it.price.value.toInt(),
-                cover = "em_" + it.id
+                postedTime = convertData(it.posted_time),
+                socialImage = it.social_image,
+                commentCount = it.comment_count
             )
-            newOffers
+            item
         }
     }
 
-    fun ticketsDTOToTickets(dto: List<TicketDTO>): List<Ticket> {
-        return dto.map {
-            val newTickets = Ticket(
-                id = it.id,
-                price = getPriceString(it.price.value.toInt()),
-                arrivalAirport = it.arrival.airport,
-                arrivalDate = getDate(it.arrival.date),
-                departureDate = getDate(it.departure.date),
-                departureAirport = it.departure.airport,
-                timeInFlight = getDuration(it.departure.date, it.arrival.date),
-                options = getOptions(
-                    it.hasTransfer,
-                    getDuration(it.departure.date, it.arrival.date)
-                ),
-                badge = it.badge,
-                transfer = it.hasTransfer
-            )
-            newTickets
-        }
+    fun newsWithContentDtoToNewsWithContent(dto: NewsWithContentDto): NewsWithContent {
+        var s = dto.content
+        s = s.substringAfter("<p>")
+        Log.d("CONTENT 3", dto.content)
+        return NewsWithContent(
+            id = dto.id,
+            title = dto.title,
+            postedTime = convertData(dto.posted_time),
+            socialImage = dto.social_image,
+            commentCount = dto.comment_count,
+            content = Html.fromHtml(s, HtmlCompat.FROM_HTML_SEPARATOR_LINE_BREAK_LIST).toString()
+            //без понятия как по другому убрать html функции из текста
+        )
     }
 
-    fun ticketRecDTOToTicketsRec(dto: List<RecTicketDto>): List<TicketsRec> {
-        return dto.map {
-            val newTicketRecs = TicketsRec(
-                id = it.id,
-                title = it.title,
-                price = getPriceString(it.price.value.toInt()),
-                timeRange = getTimeRangeString(it.timeRange)
-            )
-            newTicketRecs
-        }
-    }
-    private fun getOptions(transfer: Boolean, duration: String): String {
-        val options = StringBuilder()
-        options.append("${duration}ч в пути")
-        if (!transfer) options.append(" / Без пересадок")
-        return options.toString()
+    fun newsWithContentToNewsEntity(item: NewsWithContent): NewsEntity {
+        val currentDateTime: java.util.Date = java.util.Date()
+        return NewsEntity(
+            id = item.id,
+            title = item.title,
+            postedTime = item.postedTime,
+            socialImage = item.socialImage,
+            commentCount = item.commentCount,
+            content = item.content,
+            addedDate = currentDateTime.time
+        )
     }
 
-    private fun getDuration(departure: String, arrival: String): String {
-        val diff = convertToDate(arrival).time - convertToDate(departure).time
-        val hours = diff.milliseconds.toDouble(DurationUnit.HOURS)
-        return String.format(Locale.US, "%.1f", hours)
+    fun newsEntityToNewsWithContent(item: NewsEntity): NewsWithContent {
+        return NewsWithContent(
+            id = item.id,
+            title = item.title,
+            postedTime = item.postedTime,
+            socialImage = item.socialImage,
+            commentCount = item.commentCount,
+            content = item.content
+        )
     }
 
-    private fun getDate(date: String): String {
-        return SimpleDateFormat("HH:mm", Locale.getDefault()).format(convertToDate(date))
+    private fun convertData(t: String): String {
+        var formatted = java.time.format.DateTimeFormatter.ISO_INSTANT
+            .format(java.time.Instant.ofEpochSecond(t.toLong()))
+        formatted = formatted.replace('T', ' ')
+        formatted = formatted.replace(":00Z", "")
+        val splitted = formatted.split(" ").toMutableList()
+        splitted[0] = splitted[0].replace('-', '.')
+        val spl = splitted[0].split(".").toMutableList()
+        formatted= splitted[1] + " " + spl[2] + '.' + spl[1] + '.' +spl[0]
+        return formatted
     }
-
-    private fun convertToDate(date: String): Date {
-        val dateFormat = try {
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).parse(date)
-        } catch (e: ParseException) {
-            e.printStackTrace()
-        }
-        return if (dateFormat is Date) dateFormat
-        else Calendar.getInstance().time
-    }
-
-    private fun getTimeRangeString(array: ArrayList<String>): String {
-        val timeRange = StringBuilder()
-        array.forEachIndexed { index, time ->
-            timeRange.append(time)
-            if (index != array.size - 1) timeRange.append("  ")
-        }
-        return timeRange.toString()
-    }
-
-    private fun getPriceString(price: Int): String {
-        val result = StringBuilder()
-        with(result) {
-            append(NumberFormat.getInstance().format(price))
-            append(" ₽")
-        }
-        return result.toString().replace(',', ' ')
-    }*/
 }
+

@@ -3,4 +3,12 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="news">Новости</string>
+    <string name="favourites">Избранное</string>
+    <string name="settings">Настройки</string>
+    <string name="dark_theme">Тёмная тема</string>
+    <string name="clear_favs">Очистить избранное</string>
+    <string name="news_details">Новость</string>
+    <string name="description_of_app">Приложение разработано Ермоловым Евгением</string>
+    <string name="changed_theme">changed_theme</string>
 </resources>

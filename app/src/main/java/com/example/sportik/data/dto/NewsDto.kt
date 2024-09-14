@@ -1,9 +1,10 @@
 package com.example.sportik.data.dto
 
 data class NewsDto(
-    val newsId: Long,
+    val id: Int,
     val title: String,
-    val commentCount: String,
-    val socialImage: String,
-    val postedTime: String
+    val content: String,
+    val comment_count: String,
+    val social_image: String,
+    val posted_time: String
 )

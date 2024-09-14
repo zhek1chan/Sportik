@@ -3,23 +3,37 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_feed">
 
     <fragment
-        android:id="@+id/navigation_home"
-        android:name="com.example.sportik.presentation.ui.home.NewsFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_news" />
+        android:id="@+id/navigation_feed"
+        android:name="com.example.sportik.presentation.ui.news.NewsFragment"
+        android:label="@string/news"
+        tools:layout="@layout/fragment_news" >
+        <action
+            android:id="@+id/action_navigation_feed_to_navigation_settings"
+            app:destination="@id/navigation_settings" />
+        <action
+            android:id="@+id/action_navigation_feed_to_navigation_favourites"
+            app:destination="@id/navigation_favourites" />
+        <action
+            android:id="@+id/action_navigation_feed_to_newsDetailsFragment"
+            app:destination="@id/navigation_details" />
+    </fragment>
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.example.sportik.presentation.ui.dashboard.FavouriteFragment"
-        android:label="@string/title_dashboard"
+        android:id="@+id/navigation_favourites"
+        android:name="com.example.sportik.presentation.ui.favourites.FavouriteFragment"
+        android:label="@string/favourites"
         tools:layout="@layout/fragment_favourite" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.example.sportik.presentation.ui.notifications.SettingsFragment"
-        android:label="@string/title_notifications"
+        android:id="@+id/navigation_settings"
+        android:name="com.example.sportik.presentation.ui.settings.SettingsFragment"
+        android:label="@string/settings"
         tools:layout="@layout/fragment_settings" />
+    <fragment
+        android:id="@+id/navigation_details"
+        android:name="com.example.sportik.presentation.ui.details.NewsDetailsFragment"
+        android:label="@string/news" />
 </navigation>
