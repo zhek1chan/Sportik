@@ -14,7 +14,8 @@
 - Bottom Navifation
 - SharedPreferences
 - Clean Architecture (MVVM)
-- Dark&Light theme 
+- Dark&Light theme
+- LiveData
 
 ## Основной функционал приложения
 - Просмотр футбольных новостей со всех спортивных мероприятий
