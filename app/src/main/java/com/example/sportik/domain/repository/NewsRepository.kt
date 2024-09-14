@@ -6,7 +6,7 @@ import com.example.sportik.domain.model.NewsWithContent
 import kotlinx.coroutines.flow.Flow
 
 interface NewsRepository {
-    suspend fun getNews(): Flow<Resource<List<News>>>
+    suspend fun getNews(page: Int): Flow<Resource<List<News>>>
 
     suspend fun getNewsWithDetails(id: Int): Flow<Resource<NewsWithContent>>
 }

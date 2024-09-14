@@ -16,12 +16,13 @@ class RetrofitNetworkClient(
     private val sportsApi: SportsApi
 ) : NetworkClient {
 
-    override suspend fun getNews(): Resource<ListNewsDto> {
+    override suspend fun getNews(page: Int): Resource<ListNewsDto> {
         var news: Resource<ListNewsDto>
         if (!isConnected()) return Resource.ConnectionError(DEVICE_IS_OFFLINE)
         withContext(Dispatchers.IO) {
             news = try {
-                sportsApi.getNews().body()?.let {
+                val from = (page - 1) * 10
+                sportsApi.getNewsPaginated(from, 10).body()?.let {
                     Resource.Data(it)
                 } ?: Resource.NotFound(NOT_FOUND)
             } catch (ex: IOException) {
@@ -45,7 +46,6 @@ class RetrofitNetworkClient(
                 Resource.ConnectionError(REQUEST_ERROR)
             }
         }
-        Log.d("Network", "$news")
         return news
     }
 

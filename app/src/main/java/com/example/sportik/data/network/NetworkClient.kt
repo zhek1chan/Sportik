@@ -6,7 +6,7 @@ import com.example.sportik.data.dto.NewsWithContentDto
 
 interface NetworkClient {
 
-    suspend fun getNews(): Resource<ListNewsDto>
+    suspend fun getNews(page: Int): Resource<ListNewsDto>
 
     suspend fun getNewsWithDetails(id: Int): Resource<NewsWithContentDto>
 }

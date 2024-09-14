@@ -1,6 +1,5 @@
 package com.example.sportik.data.converters
 
-import android.os.Environment
 import android.text.Html
 import android.util.Log
 import androidx.core.text.HtmlCompat

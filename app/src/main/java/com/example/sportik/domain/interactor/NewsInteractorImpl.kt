@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.Flow
 class NewsInteractorImpl(
     private val repository: NewsRepository
 ) : NewsInteractor {
-    override suspend fun getNews(): Flow<Resource<List<News>>> =
-        repository.getNews()
+    override suspend fun getNews(page: Int): Flow<Resource<List<News>>> =
+        repository.getNews(page)
 
     override suspend fun getNewsWithDetails(id: Int): Flow<Resource<NewsWithContent>> =
         repository.getNewsWithDetails(id)

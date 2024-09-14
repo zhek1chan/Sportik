@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.sportik.data.Resource
 import com.example.sportik.domain.interactor.NewsInteractor
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,9 +22,12 @@ class NewsViewModel @Inject constructor(
     }
 
 
-    fun getNews() {
+    fun getNews(page: Int) {
         viewModelScope.launch {
-            interactor.getNews().collect { news ->
+            if (page > 1) {
+                delay(2000)
+            }
+            interactor.getNews(page).collect { news ->
                 when (news) {
                     is Resource.Data -> newsLiveData.postValue(NewsScreenState.SearchIsOk(news.value.toMutableList()))
                     is Resource.ConnectionError -> newsLiveData.postValue(NewsScreenState.ConnectionError)

@@ -4,9 +4,11 @@ import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -66,6 +68,10 @@ class SettingsFragment : Fragment() {
 
     private fun deleteAllFavs() {
         viewModel.deleteAll()
+        val duration = Toast.LENGTH_SHORT
+        val toast = Toast.makeText(requireContext(), getString(R.string.deleted_favs), duration)
+        toast.setGravity(Gravity.TOP, 0, 0)
+        toast.show()
         Log.d("SettingsFragment", "Deleted all favs")
     }
 
