@@ -15,8 +15,8 @@ class NewsRepositoryImpl(
     private val networkClient: NetworkClient,
     private val mapper: DtoMappers
 ) : NewsRepository {
-    override suspend fun getNews(): Flow<Resource<List<News>>> = flow {
-        when (val response = networkClient.getNews()) {
+    override suspend fun getNews(page: Int): Flow<Resource<List<News>>> = flow {
+        when (val response = networkClient.getNews(page)) {
             is Resource.Data -> {
                 with(response) {
                     val data = mapper.newsDtoToNews(value.news)

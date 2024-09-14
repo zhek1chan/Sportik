@@ -96,6 +96,7 @@ dependencies {
     implementation(libs.coil)
     implementation(libs.coil.compose)
     implementation(libs.coil.svg)
+
 }
 kapt {
     correctErrorTypes = true

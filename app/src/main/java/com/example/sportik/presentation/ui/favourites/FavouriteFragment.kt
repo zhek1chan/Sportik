@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,7 +18,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -45,6 +43,7 @@ import androidx.navigation.fragment.findNavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.sportik.R
 import com.example.sportik.domain.model.NewsWithContent
+import com.example.sportik.presentation.placeholder.NothingHereScreen
 import com.example.sportik.presentation.themes.ComposeTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -70,6 +69,7 @@ class FavouriteFragment : Fragment() {
     private fun onItemClicked(news: NewsWithContent) {
         val bundle = Bundle()
         bundle.putInt("newsId", news.id)
+        bundle.putBoolean("fromFavs", true)
         findNavController().navigate(R.id.navigation_details, bundle)
     }
 
@@ -103,17 +103,31 @@ class FavouriteFragment : Fragment() {
                     ) {
                         ConstraintLayout {
                             val (image, title, data, icon, num) = createRefs()
-                            Image(
-                                modifier = Modifier
-                                    .constrainAs(image) {
-                                        top.linkTo(parent.top)
-                                    }
-                                    .size(80.dp, 80.dp)
-                                    .clip(RoundedCornerShape(8.dp)),
-                                painter = rememberAsyncImagePainter(news.socialImage),
-                                contentDescription = "img",
-                                contentScale = ContentScale.Crop
-                            )
+                            if (news.socialImage == "") {
+                                Image(
+                                    modifier = Modifier
+                                        .constrainAs(image) {
+                                            top.linkTo(parent.top)
+                                        }
+                                        .size(80.dp, 80.dp)
+                                        .clip(RoundedCornerShape(8.dp)),
+                                    painter = painterResource(id = R.drawable.placeholder),
+                                    contentDescription = "img",
+                                    contentScale = ContentScale.Crop
+                                )
+                            } else {
+                                Image(
+                                    modifier = Modifier
+                                        .constrainAs(image) {
+                                            top.linkTo(parent.top)
+                                        }
+                                        .size(80.dp, 80.dp)
+                                        .clip(RoundedCornerShape(8.dp)),
+                                    painter = rememberAsyncImagePainter(news.socialImage),
+                                    contentDescription = "img",
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
 
                             Text(
                                 text = news.title,
@@ -206,7 +220,7 @@ class FavouriteFragment : Fragment() {
                 }
             }
 
-            FavouriteScreenState.NothingFound -> Unit
+            FavouriteScreenState.NothingFound -> NothingHereScreen()
             null -> Unit
         }
     }

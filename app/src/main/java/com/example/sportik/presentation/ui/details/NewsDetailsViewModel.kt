@@ -29,6 +29,14 @@ class NewsDetailsViewModel @Inject constructor(
     }
 
 
+    fun getNewsFromDb(id: Int) {
+        viewModelScope.launch {
+            favInteractor.get(id).collect {
+                newsLiveData.postValue(DetailsScreenState.SearchIsOk(it))
+            }
+        }
+    }
+
     fun getNews(id: Int) {
         viewModelScope.launch {
             interactor.getNewsWithDetails(id).collect { news ->

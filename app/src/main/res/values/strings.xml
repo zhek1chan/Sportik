@@ -11,4 +11,9 @@
     <string name="news_details">Новость</string>
     <string name="description_of_app">Приложение разработано Ермоловым Евгением</string>
     <string name="changed_theme">changed_theme</string>
+    <string name="fail_no_internet">Нет соеденения с интернетом, пожалуйста, проверьте подключение к сети.</string>
+    <string name="oi_oi">Ойой!</string>
+    <string name="nothing_added">Вы ничего не добавили в избранное.</string>
+    <string name="deleted_favs">Избранные успешно удалены</string>
+    <string name="try_again">Попробовать ещё раз</string>
 </resources>
