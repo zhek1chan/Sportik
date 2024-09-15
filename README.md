@@ -27,4 +27,4 @@
 ## Установка
 [<img src="https://raw.githubusercontent.com/mateusz-bak/openreads/master/doc/github/get-it-on-github.png"
     alt="Get it on GitHub"
-    height="80">](https://github.com/zhek1chan/PlaylistMaker/releases/tag/v1.0.0)
+    height="80">](https://github.com/zhek1chan/Sportik/releases)
