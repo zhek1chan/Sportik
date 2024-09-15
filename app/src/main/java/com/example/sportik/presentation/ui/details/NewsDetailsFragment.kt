@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -62,29 +63,42 @@ import dagger.hilt.android.AndroidEntryPoint
 class NewsDetailsFragment : Fragment() {
     private var id: Int = 0
     private val viewModel: NewsDetailsViewModel by viewModels()
+    private var newsDetails = NewsWithContent(0,"","","","","")
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        id = arguments?.getInt("newsId")!!
-        viewModel.onFavCheck(id)
-        if (arguments?.getBoolean("fromFavs") == true) {
-            viewModel.getNewsFromDb(id)
+        if (arguments?.getParcelable<NewsWithContent>("newsDetails") != null) {
+            newsDetails = arguments?.getParcelable("newsDetails")!!
+            return ComposeView(requireContext()).apply {
+                setContent {
+                    SetData(news = newsDetails)
+                }
+            }
         } else {
-            viewModel.getNews(id)
-        }
-        return ComposeView(requireContext()).apply {
-            setContent {
-                ItemDetails()
+            id = arguments?.getInt("newsId")!!
+            viewModel.onFavCheck(id)
+            if (arguments?.getBoolean("fromFavs") == true) {
+                viewModel.getNewsFromDb(id)
+            } else {
+                viewModel.getNews(id)
+            }
+
+            return ComposeView(requireContext()).apply {
+                setContent {
+                    ItemDetails()
+                }
             }
         }
     }
 
     override fun onPause() {
         super.onPause()
-        arguments?.putBoolean("fromFavs", false)
+        if (newsDetails.id != 0) {
+            arguments?.putParcelable("newsDetails", newsDetails)
+        }
     }
 
     private fun onFavouriteIconClick(id: Int) {
@@ -108,6 +122,7 @@ class NewsDetailsFragment : Fragment() {
         when (value) {
             is DetailsScreenState.SearchIsOk -> {
                 SetData((value as DetailsScreenState.SearchIsOk).data)
+                newsDetails = (value as DetailsScreenState.SearchIsOk).data
             }
 
             DetailsScreenState.ConnectionError -> {
@@ -245,104 +260,106 @@ class NewsDetailsFragment : Fragment() {
                         .fillMaxHeight()
                         .padding(16.dp, 16.dp, 16.dp, 0.dp)
                 ) {
-                    ConstraintLayout {
-                        val (image, title, content, data, icon, num) = createRefs()
-                        if (news.socialImage == "") {
-                            Image(
+                    SelectionContainer() {
+                        ConstraintLayout {
+                            val (image, title, content, data, icon, num) = createRefs()
+                            if (news.socialImage == "") {
+                                Image(
+                                    modifier = Modifier
+                                        .constrainAs(image) {
+                                            top.linkTo(parent.top)
+                                        }
+                                        .fillMaxWidth()
+                                        .height(181.dp)
+                                        .clip(RoundedCornerShape(8.dp)),
+                                    painter = painterResource(id = R.drawable.placeholder),
+                                    contentDescription = "img",
+                                    contentScale = ContentScale.FillBounds
+                                )
+                            } else {
+                                Image(
+                                    modifier = Modifier
+                                        .constrainAs(image) {
+                                            top.linkTo(parent.top)
+                                        }
+                                        .fillMaxWidth()
+                                        .height(181.dp)
+                                        .clip(RoundedCornerShape(8.dp)),
+                                    painter = rememberAsyncImagePainter(news.socialImage),
+                                    contentDescription = "img",
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
+
+                            Text(
+                                text = news.title,
                                 modifier = Modifier
-                                    .constrainAs(image) {
-                                        top.linkTo(parent.top)
-                                    }
-                                    .fillMaxWidth()
-                                    .height(181.dp)
-                                    .clip(RoundedCornerShape(8.dp)),
-                                painter = painterResource(id = R.drawable.placeholder),
-                                contentDescription = "img",
-                                contentScale = ContentScale.FillBounds
+                                    .padding(0.dp, 20.dp, 0.dp, 10.dp)
+                                    .constrainAs(title) {
+                                        top.linkTo(image.bottom)
+                                        start.linkTo(image.start)
+                                        end.linkTo(image.end)
+                                    },
+                                overflow = TextOverflow.Ellipsis,
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontWeight = FontWeight.Bold,
+                                style = typography.bodyMedium,
+                                textAlign = (TextAlign.Start)
                             )
-                        } else {
-                            Image(
+
+                            Text(
+                                text = news.content,
                                 modifier = Modifier
-                                    .constrainAs(image) {
-                                        top.linkTo(parent.top)
-                                    }
-                                    .fillMaxWidth()
-                                    .height(181.dp)
-                                    .clip(RoundedCornerShape(8.dp)),
-                                painter = rememberAsyncImagePainter(news.socialImage),
-                                contentDescription = "img",
-                                contentScale = ContentScale.Crop
+                                    .constrainAs(content) {
+                                        top.linkTo(title.bottom)
+                                        start.linkTo(title.start)
+                                        end.linkTo(title.end)
+                                    },
+                                overflow = TextOverflow.Ellipsis,
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                style = typography.bodyMedium,
+                                textAlign = (TextAlign.Start)
+                            )
+
+                            Icon(
+                                modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 10.dp)
+                                    .constrainAs(icon) {
+                                        top.linkTo(content.bottom)
+                                        start.linkTo(title.start)
+                                    },
+                                painter = painterResource(R.drawable.icon_comment),
+                                contentDescription = "CommentIcon",
+                                tint = Color.Unspecified
+                            )
+
+                            Text(
+                                text = news.postedTime,
+                                modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 10.dp)
+                                    .height(16.dp)
+                                    .constrainAs(data) {
+                                        top.linkTo(icon.top)
+                                        bottom.linkTo(icon.bottom)
+                                        end.linkTo(parent.end)
+                                    },
+                                color = Color.Gray,
+                                style = typography.bodySmall,
+                                maxLines = 1
+                            )
+
+                            Text(
+                                text = news.commentCount,
+                                modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 10.dp)
+                                    .padding(4.dp, 0.dp)
+                                    .constrainAs(num) {
+                                        top.linkTo(icon.top)
+                                        bottom.linkTo(icon.bottom)
+                                        start.linkTo(icon.end)
+                                    },
+                                color = Color.Gray,
+                                style = typography.bodySmall,
+                                maxLines = 1
                             )
                         }
-
-                        Text(
-                            text = news.title,
-                            modifier = Modifier
-                                .padding(0.dp, 20.dp, 0.dp, 10.dp)
-                                .constrainAs(title) {
-                                    top.linkTo(image.bottom)
-                                    start.linkTo(image.start)
-                                    end.linkTo(image.end)
-                                },
-                            overflow = TextOverflow.Ellipsis,
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            fontWeight = FontWeight.Bold,
-                            style = typography.bodyMedium,
-                            textAlign = (TextAlign.Start)
-                        )
-
-                        Text(
-                            text = news.content,
-                            modifier = Modifier
-                                .constrainAs(content) {
-                                    top.linkTo(title.bottom)
-                                    start.linkTo(title.start)
-                                    end.linkTo(title.end)
-                                },
-                            overflow = TextOverflow.Ellipsis,
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            style = typography.bodyMedium,
-                            textAlign = (TextAlign.Start)
-                        )
-
-                        Icon(
-                            modifier = Modifier
-                                .constrainAs(icon) {
-                                    top.linkTo(content.bottom)
-                                    start.linkTo(content.start)
-                                },
-                            painter = painterResource(R.drawable.icon_comment),
-                            contentDescription = "CommentIcon",
-                            tint = Color.Unspecified
-                        )
-
-                        Text(
-                            text = news.postedTime,
-                            modifier = Modifier
-                                .height(16.dp)
-                                .constrainAs(data) {
-                                    top.linkTo(icon.top)
-                                    bottom.linkTo(icon.bottom)
-                                    end.linkTo(parent.end)
-                                },
-                            color = Color.Gray,
-                            style = typography.bodySmall,
-                            maxLines = 1
-                        )
-
-                        Text(
-                            text = news.commentCount,
-                            modifier = Modifier
-                                .padding(4.dp, 0.dp)
-                                .constrainAs(num) {
-                                    top.linkTo(icon.top)
-                                    bottom.linkTo(icon.bottom)
-                                    start.linkTo(icon.end)
-                                },
-                            color = Color.Gray,
-                            style = typography.bodySmall,
-                            maxLines = 1
-                        )
                     }
                 }
 

@@ -23,7 +23,7 @@ class NewsDetailsViewModel @Inject constructor(
     fun getFavLiveData(): LiveData<Boolean> {
         return likeIndicator
     }
-    private val newsLiveData = MutableLiveData<DetailsScreenState>()
+    val newsLiveData = MutableLiveData<DetailsScreenState>()
     fun getStateLiveData(): LiveData<DetailsScreenState> {
         return newsLiveData
     }
